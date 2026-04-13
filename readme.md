@@ -17,10 +17,11 @@ https://rapidapi.com/gatzuma/api/deep-translate1/playground/apiendpoint_c1e24071
 The user has to subscribe to the service first (basic plan is free and recommended for casual usage only)
 When entered the key and clicking on "submit API-key",<br>
 ![API-key submitting](pictures/API-key_submit.png)<br>
-the main app will open. Here, the user can choose the languages. The text needs to be translated is written inside the "input" text field. After clicking on "Translate", the result will be shown in the "output" text field. In case of providing a wrong API-key, there will be displayed an error message, saying that the website must be reloaded and re-submitting the right key. <br>
+the main app will open. Here, the user can choose the languages. The text needs to be translated is written inside the "input" text field. After clicking on "Translate", the result will be shown in the "output" text field. In case of providing a wrong API-key, there will be displayed an error message, saying that the website must be reloaded and re-submitting the right key. The "swap" button will swap the input and output text as well as the sourche and target language<br>
 **It is important to click on "end app" to successfully close the app which also removes the API-key used.**<br>
 ![main app](pictures/main_app.png)
 
 ## Roadmap
 * v1: first version of the web-app
-* v2: adding more languages for translation, adding auto-detection
+* v2: adding to swap the text and languages via button
+* v3: adding more languages for translation, adding auto-detection
