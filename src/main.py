@@ -83,7 +83,7 @@ class Web_app:
         if "temp_api_key" not in st.session_state:
             st.session_state.temp_api_key = ""
 
-        with open("languages.json", 'r') as f:
+        with open("src/languages.json", 'r') as f:
             loaded_dict = json.load(f)
         keys=[k for k in loaded_dict]
         self.style()
