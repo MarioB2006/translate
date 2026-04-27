@@ -65,7 +65,7 @@ class Web_app:
         if "error" not in st.session_state:
             st.session_state.error=""
 
-        with open("languages.json", 'r') as f:
+        with open("src/languages.json", 'r') as f:
             loaded_dict = json.load(f)
         keys=[k for k in loaded_dict]
         self.style()
