@@ -20,7 +20,7 @@ class Translator:
         try:
             translation = response['data']['translations']['translatedText'][0]
         except KeyError:
-            error="Error from translation extraction. Provided API-key was wrong. Please reload and re-enter this website!!"
+            error="Error from translation extraction. Please reload this website!!"
             return error
         return translation 
 
@@ -49,22 +49,6 @@ class Web_app:
         </style>
         """, unsafe_allow_html=True) 
 
-    def first_panel(self):
-        self.style()
-        if "text_input_api" not in st.session_state:
-            st.session_state.text_input_api=None
-        st.markdown('<div class="title">API Key</div><br><br><br><br><br>', unsafe_allow_html=True)
-        width = 500
-        st.markdown('<div>', unsafe_allow_html=True)
-        st.session_state.text_input_api = st.text_input("input",width=width)
-        st.markdown('</div>', unsafe_allow_html=True,width=width)
-        st.markdown('<div class="center-button">', unsafe_allow_html=True)
-        st.button("Submit API-key",on_click=lambda:submit())
-        st.markdown('</div>', unsafe_allow_html=True)
-        def submit():
-            st.session_state.temp_api_key = st.session_state.text_input_api
-            st.session_state.show_main_app = True
-
     def main_app(self):
         if "text_input" not in st.session_state:
             st.session_state.text_input=None
@@ -80,10 +64,8 @@ class Web_app:
             st.session_state.text_output=None
         if "error" not in st.session_state:
             st.session_state.error=""
-        if "temp_api_key" not in st.session_state:
-            st.session_state.temp_api_key = ""
 
-        with open("src/languages.json", 'r') as f:
+        with open("languages.json", 'r') as f:
             loaded_dict = json.load(f)
         keys=[k for k in loaded_dict]
         self.style()
@@ -146,16 +128,10 @@ class Web_app:
                     st.session_state.text_output = translation
 
 def main():	
-    if "show_main_app" not in st.session_state:
-        st.session_state.show_main_app = False
-    if not st.session_state.show_main_app:
-        web = Web_app(None)  
-        web.first_panel()
-    else:
-        api_key = st.session_state.get("temp_api_key")
-        t = Translator(api_key)
-        web = Web_app(t)
-        web.main_app()
+    api_key = st.secrets["TRANSLATE_KEY"]
+    t = Translator(api_key)
+    web = Web_app(t)
+    web.main_app()
 
 if __name__=="__main__":
     main()
