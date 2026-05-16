@@ -2,6 +2,9 @@ import requests
 import streamlit as st
 import json
 
+from dotenv import load_dotenv
+import os
+
 class Translator:
     def __init__(self,API_key):
         self.API_key=API_key
@@ -22,7 +25,37 @@ class Translator:
         except KeyError:
             error="Error from translation extraction. Please reload this website!!"
             return error
-        return translation 
+        return translation
+
+class AI_teacher:
+    def __init__(self):
+        pass
+    def get_response(self,query):
+        url = "https://chatgpt-42.p.rapidapi.com/conversationgpt4"
+
+        payload = {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": query
+                }
+            ],
+            "system_prompt": "",
+            "temperature": 0.9,
+            "top_k": 5,
+            "top_p": 0.9,
+            "max_tokens": 256,
+            "web_access": False
+        }
+        headers = {
+            f"x-rapidapi-key": st.secrets["TRANSLATE_KEY"],
+            "x-rapidapi-host": "chatgpt-42.p.rapidapi.com",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(url, json=payload, headers=headers).json()
+
+        return response
 
 class Web_app:
     def __init__(self,translator:Translator):
@@ -64,8 +97,12 @@ class Web_app:
             st.session_state.text_output=None
         if "error" not in st.session_state:
             st.session_state.error=""
+        if "AI_input" not in st.session_state:
+            st.session_state.AI_input=None
+        if "AI_output" not in st.session_state:
+            st.session_state.AI_output=None
 
-        with open("src/languages.json", 'r') as f:
+        with open("src/languages.json", 'r') as f: 
             loaded_dict = json.load(f)
         keys=[k for k in loaded_dict]
         self.style()
@@ -77,23 +114,27 @@ class Web_app:
             st.markdown('<div>', unsafe_allow_html=True)
             st.text_area("input",key="text_input")
             st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown('<br><br><div class="center-button">', unsafe_allow_html=True)
+            st.markdown('<div class="center-button">', unsafe_allow_html=True)
             st.markdown(f"<p style='font-size:15px;'>{st.session_state.error}</p>", unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
+            st.text_area("AI tutor",key="AI_input")
         with space2:
             st.button("Translate",width=100,on_click=lambda:query())
             st.button("swap",width=100,on_click=lambda:swap())
             st.markdown('<div class="center-button">', unsafe_allow_html=True)
             st.button("delete text",on_click=lambda:delete())
-            st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown('<br><br><br><div class="center-button">', unsafe_allow_html=True)
-            st.button("end app",on_click=lambda:stop())
+            st.markdown('</div><br><br><br><br>', unsafe_allow_html=True)
+            st.button("send AI",width=100,on_click=lambda:AI())
+            st.markdown('<br><br><br><br><div class="center-button">', unsafe_allow_html=True)
+            st.button("end app",width=100,on_click=lambda:stop())
             st.markdown('</div>', unsafe_allow_html=True)
         with col2:
             st.selectbox(label="Translate to",options=keys,key="language2")
             st.markdown('<div>', unsafe_allow_html=True)
             st.text_area("output",key="text_output")
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div><br><br>', unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size:15px;'></p>", unsafe_allow_html=True)
+            st.text_area("AI output",key="AI_output")
 
             def stop():
                 st.session_state.temp_api_key = ""
@@ -101,6 +142,8 @@ class Web_app:
             def delete():
                 st.session_state.text_input=None
                 st.session_state.text_output=None
+                st.session_state.AI_input=None
+                st.session_state.AI_output=None
             def swap():
                 lang1=st.session_state.language1
                 lang2=st.session_state.language2
@@ -126,9 +169,12 @@ class Web_app:
                     st.session_state.error = translation
                 else:
                     st.session_state.text_output = translation
+            def AI():
+                response= AI_teacher().get_response(st.session_state.AI_input)
+                st.session_state.AI_output=response["result"]
 
 def main():	
-    api_key = st.secrets["TRANSLATE_KEY"]
+    api_key =st.secrets["TRANSLATE_KEY"]
     t = Translator(api_key)
     web = Web_app(t)
     web.main_app()
