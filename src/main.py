@@ -2,9 +2,6 @@ import requests
 import streamlit as st
 import json
 
-from dotenv import load_dotenv
-import os
-
 class Translator:
     def __init__(self,API_key):
         self.API_key=API_key
